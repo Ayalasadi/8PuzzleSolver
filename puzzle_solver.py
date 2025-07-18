@@ -74,13 +74,38 @@ if __name__ == "__main__":
     def heuristic_misplaced(state: PuzzleState) -> int:
         return sum(1 for i, val in enumerate(state.board) if val != 'b' and val != str(i + 1))
 
-    solution, steps = best_first_search(start, heuristic_misplaced)
+    def heuristic_manhattan(state: PuzzleState) -> int:
+        goal_positions = {
+            '1': (0, 0), '2': (0, 1), '3': (0, 2),
+            '4': (1, 0), '5': (1, 1), '6': (1, 2),
+            '7': (2, 0), '8': (2, 1),
+        }
 
+        total = 0
+        for idx, val in enumerate(state.board):
+            if val != 'b':
+                cur_row, cur_col = divmod(idx, 3)
+                goal_row, goal_col = goal_positions[val]
+                total += abs(cur_row - goal_row) + abs(cur_col - goal_col)
+        return total
+
+    print("--- Using Misplaced Tile Heuristic ---")
+    solution, steps = best_first_search(start, heuristic_misplaced)
     if solution:
-        print("Solution path:")
         for step in solution:
             print(step)
         print(f"Total steps: {len(solution) - 1}")
         print(f"Nodes explored: {steps}")
     else:
         print("No solution found.")
+
+    print("\n--- Using Manhattan Distance Heuristic ---")
+    solution, steps = best_first_search(start, heuristic_manhattan)
+    if solution:
+        for step in solution:
+            print(step)
+        print(f"Total steps: {len(solution) - 1}")
+        print(f"Nodes explored: {steps}")
+    else:
+        print("No solution found.")
+
